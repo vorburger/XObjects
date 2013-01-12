@@ -1,9 +1,25 @@
-grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.common.Terminals
+grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.xbase.Xbase
 
 generate xObjects "http://www.vorburger.ch/xobjects/XObjects"
 
-Model:
-	greetings+=Greeting*;
+XObject:
+	JavaXObject // TODO | EcoreXObject
+;
 	
-Greeting:
-	'Hello' name=ID '!';
+JavaXObject:
+	type = JvmTypeReference
+;
+
+/*
+// TODO "viewer" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
+
+XObject returns xbase::XExpression:
+
+XObjects returns xbase::XExpression:
+
+// May be one day XObjects could be natively supported in Xtend (similarly to Scala) ? Like so:
+// 'object' XObject
+// XExpression : ... XObject
+
+	 
+	 */

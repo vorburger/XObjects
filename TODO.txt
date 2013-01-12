@@ -1,8 +1,9 @@
 * write Grammar..
 * create parsing tests - don't care about editor yet
+* understand what XObjectsJvmModelInferrer does
 
 * intro. Named XObjects, like MWE2 & EFactory, use "Class name" (without colon)
-* intro. // and /* */ comments
+* test // and /* */ comments
 
 ---
 UI
