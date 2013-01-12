@@ -1,0 +1,9 @@
+grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.common.Terminals
+
+generate xObjects "http://www.vorburger.ch/xobjects/XObjects"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
