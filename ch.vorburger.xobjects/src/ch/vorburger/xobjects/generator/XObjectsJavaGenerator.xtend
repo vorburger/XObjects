@@ -18,12 +18,17 @@ import org.eclipse.xtext.xbase.compiler.ImportManager
 import org.eclipse.xtext.xbase.compiler.TypeReferenceSerializer
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.xbase.compiler.StringBuilderBasedAppendable
+import org.eclipse.xtext.xbase.compiler.JvmModelGenerator
+import org.eclipse.xtext.xbase.compiler.XbaseCompiler
+import org.eclipse.xtext.xbase.XExpression
+import org.eclipse.xtext.xbase.compiler.output.FakeTreeAppendable
 
 @SuppressWarnings("restriction")
 class XObjectsJavaGenerator implements IGenerator {
 	
 	@Inject extension IQualifiedNameProvider
   	@Inject extension TypeReferenceSerializer 
+  	@Inject extension XbaseCompiler
   
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
 		// NOT for(e: resource.allContents.toIterable.filter(typeof(JavaXObject))) {
@@ -50,18 +55,26 @@ class XObjectsJavaGenerator implements IGenerator {
 	def body(JavaXObject it, ImportManager importManager) {
 		val type = type.shortName(importManager) 
 		val variable = "_" + name
-	'''    
+		// TODO Support JavaDoc, look at using JvmModelGenerator.generateJavaDoc()
+'''    
     	public class «name» { ««« TODO May be later add "implements XObjectFactory<«type»>"
     		public «type» create() {
-    			«type» «variable» = new «type»(); 
+    			«type» «variable» = «IF from == null» new «type»(); «ELSE» «from.compile(importManager)» «ENDIF»
 «««    	FOR f : properties»
 «««        «f.compile(importManager)»
 «««      «ENDFOR»
 				return «variable»;
     		}
 		}
-  '''
-  }
+'''
+  	}
+  	
+  	def compile(XExpression xExpression, ImportManager importManager) {
+		val result = new FakeTreeAppendable(importManager) // StringBuilderBasedAppendable *#% ?!?
+		toJavaStatement(xExpression, result, false) // NOT toJavaExpression(xExpression, result)
+		result.toString
+	}
+  	
 	def shortName(JvmTypeReference ref, ImportManager importManager) {
 	    val result = new StringBuilderBasedAppendable(importManager)
 	    ref.serialize(ref.eContainer, result);

@@ -18,7 +18,11 @@ XObject:
 ;
 
 JavaXObject:
-	"java:" type = JvmTypeReference name = ID // name has to be mandatory for QualifiedName stuff and Code Generator ;(
+	"java:" type = JvmTypeReference 
+	name = ID // name has to be mandatory for QualifiedName stuff and Code Generator ;(
+	// The 'from' syntax is if you don't want just a "new {Type}()", but have to call some factory method..
+	("from" from = XExpression)?
+	// TODO LOW enable type inference.. technically if 'from' is given, we would not have to have 'type'.. but I don't know how to do that (with correct editor support)
 	'{'
     	// TODO (properties += PropertyAssignment)*
   	'}'

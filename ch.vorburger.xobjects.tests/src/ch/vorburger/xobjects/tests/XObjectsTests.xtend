@@ -41,4 +41,8 @@ class XObjectsTests {
 	@Test def void testInterpretTrivialObject() {
 		fail("TODO")
 	}
+	
+	@Test def void testInterpretWithConstructor() {
+		fail("TODO")
+	}
 }
