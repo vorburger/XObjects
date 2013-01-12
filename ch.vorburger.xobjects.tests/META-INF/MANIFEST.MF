@@ -9,7 +9,12 @@ Require-Bundle: ch.vorburger.xobjects,
  ch.vorburger.xobjects.ui,
  org.eclipse.core.runtime,
  org.eclipse.xtext.junit4,
- org.eclipse.ui.workbench;resolution:=optional
+ org.eclipse.ui.workbench;resolution:=optional,
+ org.eclipse.xtend.lib,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.junit;bundle-version="4.10.0",
+ org.eclipse.xtext.xbase.junit
 Import-Package: org.apache.log4j,
  org.junit;version="4.5.0",
  org.junit.runner;version="4.5.0",

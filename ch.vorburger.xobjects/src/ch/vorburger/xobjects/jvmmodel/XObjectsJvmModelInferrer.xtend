@@ -12,6 +12,7 @@ import ch.vorburger.xobjects.xObjects.XObject
  * <p>The JVM model should contain all elements that would appear in the Java code 
  * which is generated from the source model. Other models link against the JVM model rather than the source model.</p>     
  */
+@SuppressWarnings("restriction")
 class XObjectsJvmModelInferrer extends AbstractModelInferrer {
 
     /**

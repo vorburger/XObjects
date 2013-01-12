@@ -1,17 +1,41 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Michael Vorburger (http://www.vorburger.ch).
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *******************************************************************************/
+
 grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.xbase.Xbase
 
 generate xObjects "http://www.vorburger.ch/xobjects/XObjects"
 
+// package is NOT to be used to determine where the *.java file will be written to - only to qualify the XObject's name (if it has any) 
+
 XObject:
+	// TODO Documentation! And add it to XObjectsJvmModelInferrer..
 	JavaXObject // TODO | EcoreXObject
 ;
-	
+
 JavaXObject:
-	type = JvmTypeReference
+	"java:" type = JvmTypeReference name = ID // name has to be mandatory for QualifiedName stuff and Code Generator ;(
+	'{'
+    	// TODO (properties += PropertyAssignment)*
+  	'}'
+;
+
+PropertyAssignment:
+	// TODO like this? feature=[types::JvmIdentifiableElement|ValidID]
+	name=ID // TODO not ID, but directly refer to a property/field.. how to? how does this work in xtend for new .. => [ ? 
+	':'
+	value=XExpression
 ;
 
 /*
-// TODO "viewer" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
+// This class could of course alternatively and may be better also be defined in some external Preference,
+// e.g. File Extension-ending based (say *.swing.xobject => com.MyXObjectSwingEditorPart),
+// but having it inside as part of the Model is just the easiest, for now:
+// TODO "view with" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
 
 XObject returns xbase::XExpression:
 

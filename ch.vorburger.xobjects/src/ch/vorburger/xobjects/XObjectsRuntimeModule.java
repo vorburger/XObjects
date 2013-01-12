@@ -3,9 +3,16 @@
  */
 package ch.vorburger.xobjects;
 
+import org.eclipse.xtext.naming.IQualifiedNameProvider;
+
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class XObjectsRuntimeModule extends ch.vorburger.xobjects.AbstractXObjectsRuntimeModule {
+
+	@Override
+	public Class<? extends IQualifiedNameProvider> bindIQualifiedNameProvider() {
+		return ch.vorburger.xobjects.scoping.XObjectsNameProvider.class;
+	}
 
 }

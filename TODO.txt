@@ -1,6 +1,10 @@
-* write Grammar..
+* overly simplistic Grammar, create Generator and Interpreter & Test Outlines...
+* write complete Grammar..
+* Compiler / Generator
+* Interpreter
 * create parsing tests - don't care about editor yet
-* understand what XObjectsJvmModelInferrer does
+* sandbox-xobjects stuff should move into ch.vorburger.xobjects ASAP!
+* create XObjectsJvmModelInferrer.. e.g. for Documentation to be visible!
 
 * intro. Named XObjects, like MWE2 & EFactory, use "Class name" (without colon)
 * test // and /* */ comments
@@ -25,3 +29,5 @@ LATER
 
 * try with/apply to http://wazaabi.org, watch http://mirrors.dotsrc.org/fosdem/2012/lightningtalks/Wazaabi.webm ?
 	try it on http://generic-concept.com/blogs/olivier/?p=3 ?
+
+* Validation rule & Quick Fix to ensure that resource filename is same as root XObject name, and XObject package is same as file's last trailing directory nameS
