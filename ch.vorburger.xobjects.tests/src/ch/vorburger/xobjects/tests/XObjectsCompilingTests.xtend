@@ -23,6 +23,7 @@ import org.eclipse.xtext.xbase.junit.evaluation.AbstractXbaseEvaluationTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import static org.junit.Assert.*
 
 /**
  * Tests for XObjects.
@@ -33,12 +34,13 @@ import org.junit.runner.RunWith
  */
 @InjectWith(typeof(XObjectsInjectorProvider))
 @RunWith(typeof(XtextRunner))
-class XObjectsTests {
+class XObjectsCompilingTests {
 	@Inject extension XTextTestsHelper<XObject> helper
 	@Inject XObjectsJavaGenerator javaGenerator
 	@Inject EclipseRuntimeDependentJavaCompiler javaCompiler
 	
 	@Before def void initializeClassPath() throws Exception {
+		javaCompiler.clearClassPath();
 		javaCompiler.addClassPathOfClass(getClass()); // this bundle
 		javaCompiler.addClassPathOfClass(typeof(AbstractXbaseEvaluationTest)); // xbase.junit
 		// javaCompiler.addClassPathOfClass(typeof(Functions)); // xbase.lib
@@ -57,7 +59,8 @@ class XObjectsTests {
 		
 		val class1 = javaCompiler.compileToClass("TheVeryFirstXObjectEver", javaClass);
 		val Object foo = class1.newInstance();
-		val Method method = class1.getDeclaredMethod("doStuff");
+		val Method method = class1.getDeclaredMethod("create");
 		val Object obj = method.invoke(foo);
+		assertNotNull(obj)
 	}
 }

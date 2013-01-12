@@ -16,6 +16,8 @@ import org.eclipse.xtext.generator.IGenerator
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.xbase.compiler.ImportManager
 import org.eclipse.xtext.xbase.compiler.TypeReferenceSerializer
+import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.xbase.compiler.StringBuilderBasedAppendable
 
 @SuppressWarnings("restriction")
 class XObjectsJavaGenerator implements IGenerator {
@@ -45,11 +47,23 @@ class XObjectsJavaGenerator implements IGenerator {
     	«body»
   	''' 
   	
-	def body(JavaXObject it, ImportManager importManager) '''    
-    	public class «name» {
+	def body(JavaXObject it, ImportManager importManager) {
+		val type = type.shortName(importManager) 
+	'''    
+    	public class «name» { ««« TODO May be later add "implements XObjectFactory<«type»>"
+    		public «type» create() {
+    			«type» «name» = new «type»(); 
 «««    	FOR f : properties»
 «««        «f.compile(importManager)»
 «««      «ENDFOR»
-    }
+				return «name»;
+    		}
+		}
   '''
+  }
+	def shortName(JvmTypeReference ref, ImportManager importManager) {
+	    val result = new StringBuilderBasedAppendable(importManager)
+	    ref.serialize(ref.eContainer, result);
+	    result.toString
+	}
 }
