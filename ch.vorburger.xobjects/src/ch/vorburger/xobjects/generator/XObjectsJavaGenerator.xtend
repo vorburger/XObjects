@@ -49,14 +49,15 @@ class XObjectsJavaGenerator implements IGenerator {
   	
 	def body(JavaXObject it, ImportManager importManager) {
 		val type = type.shortName(importManager) 
+		val variable = "_" + name
 	'''    
     	public class «name» { ««« TODO May be later add "implements XObjectFactory<«type»>"
     		public «type» create() {
-    			«type» «name» = new «type»(); 
+    			«type» «variable» = new «type»(); 
 «««    	FOR f : properties»
 «««        «f.compile(importManager)»
 «««      «ENDFOR»
-				return «name»;
+				return «variable»;
     		}
 		}
   '''
