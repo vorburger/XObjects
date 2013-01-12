@@ -1,0 +1,26 @@
+* write Grammar..
+* create parsing tests - don't care about editor yet
+
+* intro. Named XObjects, like MWE2 & EFactory, use "Class name" (without colon)
+* intro. // and /* */ comments
+
+---
+UI
+
+* first look at some Xtend examples for SWT/GWT/JavaFX/Swing..
+
+* what was the problem with MUI again, why data-binding needed? "you can regenerate the graphics after each command instead of incrementally sync'ing view and model."
+
+---
+LATER
+
+* add native EMF support - find out how/from where http://code.google.com/a/eclipselabs.org/p/efactory/ gets at the eCore EClass 
+
+* create ch.vorburger.ejson project
+* create eJSON grammar, look at examples I looked at earlier 
+* create parsing tests - don't care about editor
+* learn about opening *.json in reflective editor
+* make XObjects grammar extend eJSON 
+
+* try with/apply to http://wazaabi.org, watch http://mirrors.dotsrc.org/fosdem/2012/lightningtalks/Wazaabi.webm ?
+	try it on http://generic-concept.com/blogs/olivier/?p=3 ?
