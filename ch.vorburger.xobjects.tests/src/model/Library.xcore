@@ -1,0 +1,41 @@
+package org.example.library
+
+class Library {
+	String name
+	contains Book[] books //opposite library
+	contains Writer[] authors
+}
+class Writer {
+	String name
+	derived String lastName get {
+		if (name != null) {
+			val int index = name.lastIndexOf(' ')
+			if (index != -1) name.substring(index + 1) else name
+		}
+	}
+}
+class Book {
+	//container Library library opposite books
+	String title
+	int pages
+	BookCategory category
+	refers Writer[] authors	
+}
+ enum BookCategory
+ {
+   Mystery = 0
+   ScienceFiction = 1
+   Biography = 2
+ }
+ type Date wraps java.util.Date
+ create {
+ 	try {
+ 		new java.text.SimpleDateFormat("yyyy-MM-dd").parse(it)
+ 	} catch (java.text.ParseException e) {
+ 		throw new RuntimeException("Could not parse as yyyy-MM-dd: " + it, e);
+ 	}
+ }
+ convert {
+ 	if (it != null) new java.text.SimpleDateFormat("yyyy-MM-dd").format(it)
+ }
+ 

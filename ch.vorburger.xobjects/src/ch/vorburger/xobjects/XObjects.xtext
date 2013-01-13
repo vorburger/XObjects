@@ -9,12 +9,31 @@
 grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.xbase.Xbase
 
 import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 generate xObjects "http://www.vorburger.ch/xobjects/XObjects"
 
 // package is NOT to be used to determine where the *.java file will be written to - only to qualify the XObject's name (if it has any) 
 
+File:
+	('package' package=QualifiedName ';'?)?
+	
+	// TODO later test import (uncomment also below) importSection=XObjectsImportSection?
+	
+	// TODO later maybe suppport *.xobject (always one) and *.xobjects (with several), and see Xbase for how they have done two langs in one module, but for now keep it simple:
+	//   (xobjects += XObject)*
+
+// This class could of course alternatively and may be better also be defined in some external Preference,
+// e.g. File Extension-ending based (say *.swing.xobject => com.MyXObjectSwingEditorPart),
+// but having it inside as part of the Model is just the easiest, for now:
+//
+// 	 TODO "view with" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
+
+	xobject = XObject
+;
+
+// May be one day XObjects could be natively supported in Xtend?
 XObject returns xbase::XExpression:
 	// TODO Documentation! And add it to XObjectsJvmModelInferrer..
 	JavaXObject | EcoreXObject
@@ -22,41 +41,78 @@ XObject returns xbase::XExpression:
 
 JavaXObject:
 	"java:" type = JvmTypeReference 
-	name = ID // name has to be mandatory for QualifiedName stuff and Code Generator ;(
+	(name = ID)? // TODO name has to be mandatory for QualifiedName stuff and Code Generator ;( ? Validation rule to have this enforced for top-level object, only? 
 	// The 'from' syntax is if you don't want just a "new {Type}()", but have to call some factory method..
 	("from" from = XExpression)?
 	// TODO LOW enable type inference.. technically if 'from' is given, we would not have to have 'type'.. but I don't know how to do that (with correct editor support)
 	'{'
-    	// TODO (properties += PropertyAssignment)*
+    	(features += JavaFeature)*
   	'}'
 ;
 
-PropertyAssignment:
-	// TODO like this? feature=[types::JvmIdentifiableElement|ValidID]
-	name=ID // TODO not ID, but directly refer to a property/field.. how to? how does this work in xtend for new .. => [ ? 
+JavaFeature:
+	// TODO VERY HIGH Probably needs a scope provider? directly refer to a property/field.. how does this work in xtend for new .. => [ ?
+	feature=[types::JvmIdentifiableElement|ValidID]	// NOT name=ID 
 	':'
 	value=XExpression
 ;
 
-// ACK: This was "strongly inspired" by Sebastian Benz's EFactory <http://code.google.com/a/eclipselabs.org/p/efactory/>
+/*
+ * ACK: This was "strongly inspired" by Sebastian Benz's EFactory <http://code.google.com/a/eclipselabs.org/p/efactory/>
+ */
 EcoreXObject:
 	"ecore:" eClass = [ecore::EClass] 
-	name = ID
+	(name = ID)?
 	'{'
+		(features += EcoreFeature)*
   	'}'
 ;
 
-/*
-// This class could of course alternatively and may be better also be defined in some external Preference,
-// e.g. File Extension-ending based (say *.swing.xobject => com.MyXObjectSwingEditorPart),
-// but having it inside as part of the Model is just the easiest, for now:
-// TODO "view with" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
+EcoreFeature:
+	eFeature=[ecore::EStructuralFeature] /* (isMany?="+=" | "=") */ value=EcoreValue
+;
 
-XObjects returns xbase::XExpression:
+EcoreValue:
+	EcoreAttribute | EcoreReference | EcoreContainment
+;
 
-// May be one day XObjects could be natively supported in Xtend (similarly to Scala) ? Like so:
-// 'object' XObject
-// XExpression : ... XObject
+EcoreReference:
+	value = [ecore::EObject]
+;
+	
+EcoreContainment:
+	value  = EcoreXObject
+;
 
-	 
-	 */
+// TODO Make this more dynamic.. support custom data types easily defined in Xcore! 
+EcoreAttribute:	(EcoreEnumAttribute | StringAttribute | IntegerAttribute | EcoreBooleanAttribute | EcoreDoubleAttribute | EcoreDateAttribute | EcoreNullAttribute);
+EcoreEnumAttribute: ":" value = [ecore::EEnumLiteral];
+StringAttribute : value=STRING;
+IntegerAttribute: value=ECORE_LONG;
+EcoreDoubleAttribute: value=ECORE_DOUBLE;
+EcoreDateAttribute: value=ECORE_DATE;
+EcoreNullAttribute: value = "NULL"; // TODO support this for JavaFeature as well? What's it good for?
+EcoreBooleanAttribute: value?="true" |  "false" {BooleanAttribute};	
+terminal ECORE_LONG returns ecore::ELong : ('-')?  ('0'..'9')+;
+terminal ECORE_DOUBLE returns ecore::EDouble : ('-')?  ('0'..'9')+ '.'  ('0'..'9')+;
+terminal ECORE_DATE returns ecore::EDate : ('0'..'1') '0'..'9' '.' '0'..'3' '0'..'9' '.'  '0'..'9' '0'..'9' '0'..'9' '0'..'9';
+
+// ---------------------------------------------------------------------------------------
+// Import support?
+
+//// Recent Xbase has this up in Xtype already, so remove from here later when upgrading:
+//XObjectsQualifiedNameWithWildCard :
+//	QualifiedName  '.' '*';
+//	
+//XObjectsImportSection:
+//		importDeclarations+=XObjectsImportDeclaration+;
+//
+//XObjectsImportDeclaration:
+//	'import' (
+//		(importedType=[types::JvmDeclaredType|QualifiedName] '.' '*') 
+//		| importedType=[types::JvmDeclaredType|QualifiedName] 
+//		| importedNamespace=XObjectsQualifiedNameWithWildCard) ';'?
+//;
+
+
+

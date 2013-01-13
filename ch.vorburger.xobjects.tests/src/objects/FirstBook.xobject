@@ -1,0 +1,10 @@
+// no concept like "module" of mwe2 needed (yet?)
+
+// TODO support import...
+
+// This uses a Java Bean as Model - this may be any Java Bean-compliant Class - not necc. gen. by EMF!
+// When I'll add dedicated EMF support (instead of just any static Java class) for dyn, then this Factory won't be needed (auto discovered)
+org.example.library.Book via LibraryFactory::eINSTANCE.createBook {
+	title: "Core Java Data Objects"
+	pages: 1234
+}

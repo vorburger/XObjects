@@ -1,8 +1,12 @@
-* write complete Grammar.. with tests..
+* write tests for and support simple properties
+* write tests for and support nested objects
+* write tests for and support multi-value (multiplicity many) nested objects
+
 * sandbox-xobjects stuff should move into ch.vorburger.xobjects ASAP!
-* create XObjectsJvmModelInferrer.. e.g. for Documentation to be visible!
+* create XObjectsJvmModelInferrer.. e.g. for cross-refs & documentation to be visible? re-read http://www.eclipse.org/Xtext/documentation.html#xbaseInferredType
 
 * test // and /* */ comments
+* test if imports actually work? remove for now if not immediately..
 
 ---
 UI
@@ -26,3 +30,5 @@ LATER
 	try it on http://generic-concept.com/blogs/olivier/?p=3 ?
 
 * Validation rule & Quick Fix to ensure that resource filename is same as root XObject name, and XObject package is same as file's last trailing directory nameS
+
+
