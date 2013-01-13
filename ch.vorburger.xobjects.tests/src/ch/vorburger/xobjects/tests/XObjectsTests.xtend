@@ -10,7 +10,6 @@ package ch.vorburger.xobjects.tests
 
 import ch.vorburger.xobjects.XObjectsInjectorProvider
 import ch.vorburger.xobjects.xObjects.JavaXObject
-import ch.vorburger.xobjects.xObjects.XObject
 import javax.inject.Inject
 import org.eclipse.xtext.junit4.InjectWith
 import org.eclipse.xtext.junit4.XtextRunner
@@ -19,6 +18,7 @@ import org.junit.runner.RunWith
 
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
+import ch.vorburger.xobjects.interpreter.XObjectsInterpreter
 
 /**
  * Tests for XObjects.
@@ -30,19 +30,31 @@ import static org.junit.Assert.*
 @InjectWith(typeof(XObjectsInjectorProvider))
 @RunWith(typeof(XtextRunner))
 class XObjectsTests {
-	@Inject extension XTextTestsHelper<XObject> helper
+	@Inject extension XTextTestsHelper<JavaXObject>
+	@Inject extension XObjectsInterpreter interpreter
 	
 	@Test def void testParsingTrivialObject() {
-		val xobject = parseAndValidate("java:java.lang.Object TheVeryFirstXObjectEver { }")
+		val xobject = parseAndValidate("java:java.lang.String TheVeryFirstXObjectEver { }")
 		assertThat((xobject as JavaXObject).name, is("TheVeryFirstXObjectEver"))
-		assertThat((xobject as JavaXObject).type.qualifiedName, is("java.lang.Object"))
+		assertThat((xobject as JavaXObject).type.qualifiedName, is("java.lang.String"))
 	}
 	
 	@Test def void testInterpretTrivialObject() {
-		fail("TODO")
+		val object = eval("java:java.lang.String TheVeryFirstXObjectEver { }")
+		assertTrue(object instanceof String)
 	}
 	
 	@Test def void testInterpretWithConstructor() {
-		fail("TODO")
+		val Integer i = eval("java:java.lang.Integer TheVeryFirstXObjectWithoutImplicitConstructorCall from new Integer(123) { }") as Integer
+		assertEquals(new Integer(123), i)
+	}
+	
+	def Object eval(String text) {
+		val model = parseAndValidate(text)
+		val result = interpreter.evaluate(model)
+		if (result.exception != null)
+			// hack because throw result.exception doesn't work, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=382835:
+			throw new AssertionError("evalute result has Exception", result.exception)	
+		result.result
 	}
 }

@@ -23,6 +23,11 @@ import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.output.FakeTreeAppendable
 
+/**
+ * Generate Java class source code from JavaXObject.
+ * 
+ * @author Michael Vorburger
+ */
 @SuppressWarnings("restriction")
 class XObjectsJavaGenerator implements IGenerator {
 	

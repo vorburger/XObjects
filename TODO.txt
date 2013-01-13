@@ -1,12 +1,7 @@
-* overly simplistic Grammar, create Generator and Interpreter & Test Outlines...
-* write complete Grammar..
-* Compiler / Generator
-* Interpreter
-* create parsing tests - don't care about editor yet
+* write complete Grammar.. with tests..
 * sandbox-xobjects stuff should move into ch.vorburger.xobjects ASAP!
 * create XObjectsJvmModelInferrer.. e.g. for Documentation to be visible!
 
-* intro. Named XObjects, like MWE2 & EFactory, use "Class name" (without colon)
 * test // and /* */ comments
 
 ---

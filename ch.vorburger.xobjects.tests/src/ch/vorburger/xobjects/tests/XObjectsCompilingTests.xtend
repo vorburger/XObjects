@@ -51,7 +51,7 @@ class XObjectsCompilingTests {
 	
 	// TODO xtend (v2.4.0-201210*) doesn't do this Generics right.. no red here, but gen. "?" as type in *.java upon invocation below
 	//def <T> T newXObject(String text) {
-	def newXObject(String text) {
+	def newXObjectByCompilation(String text) {
 		val xobject = parseAndValidate(text)
 		val InMemoryFileSystemAccess fsa = new InMemoryFileSystemAccess
 		javaGenerator.doGenerate(xobject.eResource, fsa)
@@ -66,13 +66,12 @@ class XObjectsCompilingTests {
 	}
  	
 	@Test def void testJavaCodeGenTrivialObject() {
-		val obj = "java:java.lang.Object TheVeryFirstXObjectEver { }".newXObject
-		assertNotNull(obj)
+		val obj = "java:java.lang.String TheVeryFirstXObjectEver { }".newXObjectByCompilation
+		assertTrue(obj instanceof String)
 	}
 	
 	@Test def void testJavaCodeGenWithConstructor() {
-		val Integer i = "java:java.lang.Integer TheVeryFirstXObjectWithoutImplicitConstructorCall from new Integer(123) { }".newXObject as Integer
+		val Integer i = "java:java.lang.Integer TheVeryFirstXObjectWithoutImplicitConstructorCall from new Integer(123) { }".newXObjectByCompilation as Integer
 		assertEquals(new Integer(123), i)
-		assertNotNull(i)
 	}
 }

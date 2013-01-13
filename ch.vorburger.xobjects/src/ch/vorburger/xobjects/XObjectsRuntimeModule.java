@@ -3,12 +3,18 @@
  */
 package ch.vorburger.xobjects;
 
+import org.eclipse.xtext.generator.IGenerator;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class XObjectsRuntimeModule extends ch.vorburger.xobjects.AbstractXObjectsRuntimeModule {
+
+	@Override
+	public Class<? extends IGenerator> bindIGenerator() {
+		return ch.vorburger.xobjects.generator.XObjectsJavaGenerator.class;
+	}
 
 	@Override
 	public Class<? extends IQualifiedNameProvider> bindIQualifiedNameProvider() {
