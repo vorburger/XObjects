@@ -1,3 +1,30 @@
+EFactory Testing Feedback & Ideas
+
+* Bienz email / -> Git?
+
+* Tycho build.. ACTUALLY.. how does Xtext/Xtend get built?! Tycho? Buckminster?
+
+* NewObject {} optional?
+
+* Validation (better even no Syntax completion) if no name mapper (e.g. if object doesn't have name)
+  instead of a late exception when opened with EMF Editor and changing name only then 
+
+* Validation (better even no Syntax completion) that if ID name given on top, should not allow it inside again!
+
+* Outline!!
+
+* Avoid several multipleProperty+= and introduce JSON-like [] syntax instead.. optional/additional, or change instead
+
+* JSON Generator (without using any JSON Framework.. for performance, best to just use simplest String-based text writing 
+
+* Bug? com.googlecode.efactory.serialization.ValueSwitch.caseBigDecimal(BigDecimal) conversion to double looks a little suspicious to me
+
+* Bug Doc: No more keyword "new" in current grammar
+
+
+---
+XObjects 
+
 * write tests for and support simple properties
 * write tests for and support nested objects
 * write tests for and support multi-value (multiplicity many) nested objects
