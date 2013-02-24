@@ -1,18 +1,22 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ch.vorburger.xobjects.tests
-Bundle-Vendor: My Company
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Bundle-Version: 1.0.0.qualifier
-Bundle-SymbolicName: ch.vorburger.xobjects.tests; singleton:=true
+Bundle-ClassPath: .
+Bundle-SymbolicName: ch.vorburger.xobjects.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: ch.vorburger.xobjects,
  ch.vorburger.xobjects.ui,
  org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.xtext.junit4,
  org.eclipse.ui.workbench;resolution:=optional,
  org.eclipse.xtend.lib,
  com.google.guava,
  org.eclipse.xtext.xbase.lib,
+ org.eclipse.emf.ecore.xcore.lib;visibility:=reexport,
  org.junit;bundle-version="4.10.0",
  org.eclipse.xtext.xbase.junit
 Import-Package: org.apache.log4j,
@@ -24,4 +28,7 @@ Import-Package: org.apache.log4j,
  org.junit.runners.model;version="4.5.0",
  org.hamcrest.core
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: ch.vorburger.xobjects
+Export-Package: ch.vorburger.xobjects,
+ org.example.library,
+ org.example.library.impl,
+ org.example.library.util
