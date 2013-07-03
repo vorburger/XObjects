@@ -23,7 +23,7 @@ import ch.vorburger.xobjects.interpreter.XObjectsInterpreter
 /**
  * Tests for XObjects.
  * 
- *  These tests run just fine as plain simple SE; no need to run them as Plug-In Tests (PDE).
+ * These tests run just fine as plain simple SE; no need to run them as Plug-In Tests (PDE).
  *
  * @author Michael Vorburger
  */

@@ -1,4 +1,5 @@
 EFactory Testing Feedback & Ideas
+NOW ALL IN https://docs.google.com/document/edit?id=1LW15RWPkPfnbv05OYYg5yr-AcmweS7yrWBwFfqlSASQ
 
 * Bienz email / -> Git?
 
@@ -28,11 +29,12 @@ XObjects
 * write tests for and support simple properties
 * write tests for and support nested objects
 * write tests for and support multi-value (multiplicity many) nested objects
+* test // and /* */ comments
 
-* sandbox-xobjects stuff should move into ch.vorburger.xobjects ASAP!
+* grammar x3 error(208): ../ch.vorburger.xobjects/src-gen/ch/vorburger/xobjects/parser/antlr/internal/InternalXObjects.g:1231:1: The following token definitions can never be matched because prior tokens match the same input: RULE_INT
+
 * create XObjectsJvmModelInferrer.. e.g. for cross-refs & documentation to be visible? re-read http://www.eclipse.org/Xtext/documentation.html#xbaseInferredType
 
-* test // and /* */ comments
 * test if imports actually work? remove for now if not immediately..
 
 ---
@@ -58,4 +60,6 @@ LATER
 
 * Validation rule & Quick Fix to ensure that resource filename is same as root XObject name, and XObject package is same as file's last trailing directory nameS
 
-
+* add an "import json-schema-file: some-schema.json" ? 
+  Using http://json-schema.org, https://github.com/garycourt/JSV
+  

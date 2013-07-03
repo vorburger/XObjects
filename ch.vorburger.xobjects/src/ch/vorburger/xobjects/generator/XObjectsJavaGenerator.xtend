@@ -14,14 +14,14 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.eclipse.xtext.generator.IGenerator
 import org.eclipse.xtext.naming.IQualifiedNameProvider
-import org.eclipse.xtext.xbase.compiler.ImportManager
-import org.eclipse.xtext.xbase.compiler.TypeReferenceSerializer
-import org.eclipse.xtext.common.types.JvmTypeReference
-import org.eclipse.xtext.xbase.compiler.StringBuilderBasedAppendable
-import org.eclipse.xtext.xbase.compiler.JvmModelGenerator
-import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.XExpression
+import org.eclipse.xtext.xbase.compiler.ImportManager
+import org.eclipse.xtext.xbase.compiler.StringBuilderBasedAppendable
+//import org.eclipse.xtext.xbase.compiler.TypeReferenceSerializer
+import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.FakeTreeAppendable
+import org.eclipse.xtext.common.types.JvmType
+// import ch.vorburger.xobjects.xObjects.XObject
 
 /**
  * Generate Java class source code from JavaXObject.
@@ -32,20 +32,25 @@ import org.eclipse.xtext.xbase.compiler.output.FakeTreeAppendable
 class XObjectsJavaGenerator implements IGenerator {
 	
 	@Inject extension IQualifiedNameProvider
-  	@Inject extension TypeReferenceSerializer 
-  	@Inject extension XbaseCompiler
+  	// @Inject extension TypeReferenceSerializer 
+  	// @Inject extension XbaseCompiler
   
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
 		// NOT for(e: resource.allContents.toIterable.filter(typeof(JavaXObject))) {
 		val rootJavaXObject = resource.allContents.toIterable.filter(typeof(JavaXObject)).head 
-		// NAH, let's go like this (WAS: "Because XObjects may be anon (name not mandatory) we don't do the usual:") 
+		// NAH, let's go like this (WAS: "Because XObjects may be anon (name not mandatory) we don't do the usual:")
+		val className = getClassName(rootJavaXObject);
 		val fileName = rootJavaXObject.fullyQualifiedName.toString("/") + ".java"
-		fsa.generateFile(fileName, rootJavaXObject.generate)
+		fsa.generateFile(fileName, rootJavaXObject.generate(className))
 	}
 	
-	def generate(JavaXObject it) '''
+	def String getClassName(JavaXObject xObject) {
+		return xObject.eResource.URI.trimFileExtension.segmentsList.last
+	}
+	
+	def generate(JavaXObject it, String className) '''
 	    «val importManager = new ImportManager(true)» 
-	    «val body = body(importManager)»
+	    «val body = body(importManager, className)»
 	    «IF eContainer != null»
 	      package «eContainer.fullyQualifiedName»;
 	    «ENDIF»
@@ -57,14 +62,15 @@ class XObjectsJavaGenerator implements IGenerator {
     	«body»
   	''' 
   	
-	def body(JavaXObject it, ImportManager importManager) {
+	def body(JavaXObject it, ImportManager importManager, String className) {
 		val type = type.shortName(importManager) 
-		val variable = "_" + name
+		val variable = "_o" // + name
 		// TODO Support JavaDoc, look at using JvmModelGenerator.generateJavaDoc()
 '''    
-    	public class «name» { ««« TODO May be later add "implements XObjectFactory<«type»>"
+    	public class «className» { ««« TODO May be later add "implements XObjectFactory<«type»>"
     		public «type» create() {
-    			«type» «variable» = «IF from == null» new «type»(); «ELSE» «from.compile(importManager)» «ENDIF»
+    			«type» «variable» = ««« «IF from == null»
+    				new «type»(); ««« «ELSE» «from.compile(importManager)» «ENDIF»
 «««    	FOR f : properties»
 «««        «f.compile(importManager)»
 «««      «ENDFOR»
@@ -76,13 +82,14 @@ class XObjectsJavaGenerator implements IGenerator {
   	
   	def compile(XExpression xExpression, ImportManager importManager) {
 		val result = new FakeTreeAppendable(importManager) // StringBuilderBasedAppendable *#% ?!?
-		toJavaStatement(xExpression, result, false) // NOT toJavaExpression(xExpression, result)
+		// ?? toJavaStatement(xExpression, result, false) // NOT toJavaExpression(xExpression, result)
 		result.toString
 	}
   	
-	def shortName(JvmTypeReference ref, ImportManager importManager) {
+	def shortName(JvmType/*Reference*/ ref, ImportManager importManager) {
 	    val result = new StringBuilderBasedAppendable(importManager)
-	    ref.serialize(ref.eContainer, result);
+	    // ref.serialize(ref.eContainer, result);
+	    result.append(ref);
 	    result.toString
 	}
 }

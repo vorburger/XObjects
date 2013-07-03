@@ -1,0 +1,6 @@
+import java:model.JavaPerson
+
+JavaPerson {
+	name: "Bill Gates is a hero"
+	age: 53 
+}

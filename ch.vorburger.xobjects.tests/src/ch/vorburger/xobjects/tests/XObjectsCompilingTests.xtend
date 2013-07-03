@@ -59,7 +59,8 @@ class XObjectsCompilingTests {
 		System::out.println(javaClass)
 		// TODO assertTrue(javaClass, javaClass.contains("new java.lang.Object()"))
 		
-		val class1 = javaCompiler.compileToClass(xobject.name, javaClass);
+		val String className = javaGenerator.getClassName(xobject)
+		val class1 = javaCompiler.compileToClass(className, javaClass);
 		val Object foo = class1.newInstance();
 		val Method method = class1.getDeclaredMethod("create");
 		return method.invoke(foo) // TODO as T;

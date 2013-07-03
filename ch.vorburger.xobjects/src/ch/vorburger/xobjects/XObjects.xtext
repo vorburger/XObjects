@@ -6,18 +6,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.xbase.Xbase
+grammar ch.vorburger.xobjects.XObjects with org.eclipse.xtext.common.Terminals // org.eclipse.xtext.xbase.Xbase
 
-import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
-import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+// TODO not actually needed? import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as jvmTypes
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 generate xObjects "http://www.vorburger.ch/xobjects/XObjects"
 
-// package is NOT to be used to determine where the *.java file will be written to - only to qualify the XObject's name (if it has any) 
-
 File:
-	('package' package=QualifiedName ';'?)?
+	// package is NOT to be used to determine where the *.java file will be written to - only to qualify the XObject's name (if it has any) 
+	// TODO ('package' package=QualifiedName ';'?)?
 	
 	// TODO later test import (uncomment also below) importSection=XObjectsImportSection?
 	
@@ -30,20 +29,46 @@ File:
 //
 // 	 TODO "view with" viewer = JavaClass/Type (extends XObjectsEclipseViewer interface)
 
-	xobject = XObject
+	root = XObject
 ;
 
 // May be one day XObjects could be natively supported in Xtend?
-XObject returns xbase::XExpression:
+XObject: // returns xbase::XExpression:
 	// TODO Documentation! And add it to XObjectsJvmModelInferrer..
-	JavaXObject | EcoreXObject
+	NoSchemaXObject | JavaXObject | EcoreXObject
 ;
 
-JavaXObject:
-	"java:" type = JvmTypeReference 
-	(name = ID)? // TODO name has to be mandatory for QualifiedName stuff and Code Generator ;( ? Validation rule to have this enforced for top-level object, only? 
+XValue:  // TODO needs returns XValue?
+	StringValue | SignedNumberValue | DateValue | BooleanValue;
+
+StringValue: // TODO needs returns XValue?
+	{ StringValue } value=STRING;
+
+SignedNumberValue: { SignedNumberValue } SignedNumber;
+// LongValue: value=LONG;
+// DoubleValue: value=DOUBLE;
+
+DateValue: {DateValue} value=ISO8601_DateFullZulu;
+BooleanValue: value?="true" |  "false" {BooleanValue};	
+
+NoSchemaXObject : { NoSchemaXObject }
+	// TODO Optional '{', if root object
+	'{'
+    	(features += NoSchemaFeature)*
+  	'}'
+;
+
+NoSchemaFeature:
+	feature = STRING // TODO Do the thing for simple ID matching the regular expression /[a-zA-Z_][a-zA-Z0-9_]+/ then it doesn't have to be single or double quoted, otherwise it does
+	('=' | ':' | '=>') // TODO How-to factor out to share this rule? I tried a terminal and it didn't work..
+	value = XValue
+;
+
+JavaXObject: // TODO extends NoSchemaXObject?
+	"java:" type = [jvmTypes::JvmType|QualifiedName] // JvmTypeReference 
+	(name = ID)? // TODO name has to be mandatory for QualifiedName stuff and Code Generator ;( ? Or, better, make the NameProvider use the eResource name - like in started to in the Generator.. 
 	// The 'from' syntax is if you don't want just a "new {Type}()", but have to call some factory method..
-	("from" from = XExpression)?
+	// TODO ("from" from = XExpression)?
 	// TODO LOW enable type inference.. technically if 'from' is given, we would not have to have 'type'.. but I don't know how to do that (with correct editor support)
 	'{'
     	(features += JavaFeature)*
@@ -52,13 +77,15 @@ JavaXObject:
 
 JavaFeature:
 	// TODO VERY HIGH Probably needs a scope provider? directly refer to a property/field.. how does this work in xtend for new .. => [ ?
-	feature=[types::JvmIdentifiableElement|ValidID]	// NOT name=ID 
-	':'
-	value=XExpression
+	jFeature = [jvmTypes::JvmIdentifiableElement|ValidID]	// NOT name=ID 
+	('=' | ':' | '=>') // TODO How-to factor out to share this rule? I tried a terminal and it didn't work..	
+	//value = XExpression
 ;
 
 /*
  * ACK: This was "strongly inspired" by Sebastian Benz's EFactory <http://code.google.com/a/eclipselabs.org/p/efactory/>
+ * 
+ * TODO may be actually use & integrate EFactory code here, and rename this EFactoryXObject? Get in touch with Sebastian first.. 
  */
 EcoreXObject:
 	"ecore:" eClass = [ecore::EClass] 
@@ -69,7 +96,10 @@ EcoreXObject:
 ;
 
 EcoreFeature:
-	eFeature=[ecore::EStructuralFeature] /* (isMany?="+=" | "=") */ value=EcoreValue
+	eFeature=[ecore::EStructuralFeature] 
+	// NO (isMany?="+=" | "=")
+	('=' | ':' | '=>') // TODO How-to factor out to share this rule? I tried a terminal and it didn't work..
+	value=EcoreValue
 ;
 
 EcoreValue:
@@ -85,17 +115,10 @@ EcoreContainment:
 ;
 
 // TODO Make this more dynamic.. support custom data types easily defined in Xcore! 
-EcoreAttribute:	(EcoreEnumAttribute | StringAttribute | IntegerAttribute | EcoreBooleanAttribute | EcoreDoubleAttribute | EcoreDateAttribute | EcoreNullAttribute);
+EcoreAttribute:	(EcoreEnumAttribute | StringValue | BooleanValue | SignedNumberValue | DateValue | EcoreNullAttribute);
 EcoreEnumAttribute: ":" value = [ecore::EEnumLiteral];
-StringAttribute : value=STRING;
-IntegerAttribute: value=ECORE_LONG;
-EcoreDoubleAttribute: value=ECORE_DOUBLE;
-EcoreDateAttribute: value=ECORE_DATE;
+
 EcoreNullAttribute: value = "NULL"; // TODO support this for JavaFeature as well? What's it good for?
-EcoreBooleanAttribute: value?="true" |  "false" {BooleanAttribute};	
-terminal ECORE_LONG returns ecore::ELong : ('-')?  ('0'..'9')+;
-terminal ECORE_DOUBLE returns ecore::EDouble : ('-')?  ('0'..'9')+ '.'  ('0'..'9')+;
-terminal ECORE_DATE returns ecore::EDate : ('0'..'1') '0'..'9' '.' '0'..'3' '0'..'9' '.'  '0'..'9' '0'..'9' '0'..'9' '0'..'9';
 
 // ---------------------------------------------------------------------------------------
 // Import support?
@@ -114,5 +137,21 @@ terminal ECORE_DATE returns ecore::EDate : ('0'..'1') '0'..'9' '.' '0'..'3' '0'.
 //		| importedNamespace=XObjectsQualifiedNameWithWildCard) ';'?
 //;
 
+QualifiedName:
+  ValidID ('.' ValidID)*;
+  
+ValidID:
+	ID;
 
+terminal LONG returns ecore::ELong     : ('-')?  ('0'..'9')+;
+// Because Xtext Doc says "It is generally not a good idea to implement floating point literals with terminal rules. You should use data type rules instead for the above mentioned reasons."
+// we don't use LONG in LongValue and DOUBLE in DoubleValue via this:
+//     terminal DOUBLE returns ecore::EDouble : ('-')?  ('0'..'9')+ '.' ('0'..'9')+;
+// but instead this:
+SignedNumber hidden():
+	('-')? (LONG) ('.' (LONG))?;
 
+// TODO I'm not 100% sure this is correct... for e.g. 1979-05-27T07:32:00Z 
+// and it will definitely need a coded value converter, @see https://www.google.ch/search?q=java+ISO8601+dates, in particular http://stackoverflow.com/questions/2201925/converting-iso8601-compliant-string-to-java-util-date; may be also check TOML implementations?
+ISO8601_DateFullZulu hidden():
+	INT '-' INT '-' INT 'T' INT ':' INT ':' INT 'Z';
